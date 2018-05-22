@@ -1,0 +1,44 @@
+{
+    "name": "superbig/craft-valassis",
+    "description": "Attach Valassis coupons to Contact form requests",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "valassis"
+    ],
+    "support": {
+        "docs": "https://github.com/sjelfull/craft-valassis/blob/master/README.md",
+        "issues": "https://github.com/sjelfull/craft-valassis/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Superbig",
+            "homepage": "https://superbig.co"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1"
+    },
+    "autoload": {
+        "psr-4": {
+          "superbig\\valassis\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Valassis",
+        "handle": "valassis",
+        "hasCpSettings": true,
+        "hasCpSection": true,
+        "changelogUrl": "https://raw.githubusercontent.com/sjelfull/craft-valassis/master/CHANGELOG.md",
+        "components": {
+            "coupons": "superbig\\valassis\\services\\Coupons",
+            "customers": "superbig\\valassis\\services\\Customers"
+        },
+        "class": "superbig\\valassis\\Valassis"
+    }
+}

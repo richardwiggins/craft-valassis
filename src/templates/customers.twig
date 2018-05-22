@@ -1,0 +1,52 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Valassis plugin for Craft CMS 3.x
+ *
+ * Valassis index.twig
+ *
+ * @author    Superbig
+ * @copyright Copyright (c) 2018 Superbig
+ * @link      https://superbig.co
+ * @package   Valassis
+ * @since     1.0.0
+ */
+#}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("superbig\\valassis\\assetbundles\\valassis\\ValassisAsset") %}
+{% do view.registerAssetBundle("superbig\\valassis\\assetbundles\\customerscpsection\\CustomersCPSectionAsset") %}
+
+{% set docsUrl = "https://github.com/sjelfull/valassis/blob/master/README.md" %}
+
+{% set title = "Valassis | Customers" %}
+
+{% set pluginCpUrl = url('valassis') %}
+
+{% set iconUrl = view.getAssetManager().getPublishedUrl('@superbig/valassis/assetbundles/customerscpsection/dist', true) ~ '/img/Customers-icon.svg' %}
+
+{% set subnav = {
+    "coupons": { label: "Coupons"|t('valassis'), url: url(pluginCpUrl ~ '/coupons') },
+    "customers": { label: "Customers"|t('valassis'), url: url(pluginCpUrl ~ '/customers') },
+
+} %}
+{% set selectedSubnavItem = 'customers' %}
+
+{% set crumbs = [
+    { label: "Valassis", url: url(pluginCpUrl) },
+    { label: "Customers"|t('valassis'), url: url(pluginCpUrl ~ '/customers') },
+] %}
+
+{% set extraPageHeaderHtml %}
+    <div class="buttons">
+        <a href="{{ pluginCpUrl }}" class="btn submit add icon">{{ "Click Me!"|t('valassis') }}</a>
+    </div>
+{% endset %}
+
+{% set content %}
+    <h2>{{ "Customers CP Section body goes here"|t('valassis') }}</h2>
+    <img src="{{ iconUrl }}" height="64" width="64" />
+    <p class="textline"></p>
+{% endset %}
