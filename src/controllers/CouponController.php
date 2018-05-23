@@ -10,7 +10,6 @@
 
 namespace superbig\valassis\controllers;
 
-use superbig\supersearch\SuperSearch;
 use superbig\valassis\Valassis;
 
 use Craft;
