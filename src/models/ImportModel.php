@@ -10,17 +10,18 @@
 
 namespace superbig\valassis\models;
 
-use superbig\valassis\Valassis;
-
-use Craft;
-use craft\base\Model;
+use superbig\valassis\base\BaseModel;
 
 /**
  * @author    Superbig
  * @package   Valassis
  * @since     1.0.0
+ *
+ * @property int   $id
+ * @property int   $siteId
+ * @property array $payload
  */
-class ImportModel extends Model
+class ImportModel extends BaseModel
 {
     // Public Properties
     // =========================================================================
@@ -28,7 +29,10 @@ class ImportModel extends Model
     /**
      * @var string
      */
-    public $someAttribute = 'Some Default';
+    public $file;
+    public $id;
+    public $siteId;
+    public $payload;
 
     // Public Methods
     // =========================================================================
@@ -39,8 +43,8 @@ class ImportModel extends Model
     public function rules()
     {
         return [
-            ['someAttribute', 'string'],
-            ['someAttribute', 'default', 'value' => 'Some Default'],
+            [['file', 'payload'], 'required'],
+            [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => 'csv, txt'],
         ];
     }
 }

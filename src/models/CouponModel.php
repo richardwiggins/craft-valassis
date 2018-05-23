@@ -10,6 +10,7 @@
 
 namespace superbig\valassis\models;
 
+use superbig\valassis\records\CouponRecord;
 use superbig\valassis\Valassis;
 
 use Craft;
@@ -19,16 +20,35 @@ use craft\base\Model;
  * @author    Superbig
  * @package   Valassis
  * @since     1.0.0
+ *
+ * @property int    $id
+ * @property int    $siteId
+ * @property int    $customerId
+ * @property int    $importId
+ * @property string $couponPin
+ * @property string $consumerId
+ * @property array  $response
  */
 class CouponModel extends Model
 {
     // Public Properties
     // =========================================================================
 
-    /**
-     * @var string
-     */
-    public $someAttribute = 'Some Default';
+    public $id;
+    public $siteId;
+    public $customerId;
+    public $importId;
+    public $couponPin;
+    public $consumerId;
+    public $response;
+
+    public static function createFromRecord(CouponRecord $record)
+    {
+        $model = new static();
+        $model->setAttributes($record->getAttributes());
+
+        return $model;
+    }
 
     // Public Methods
     // =========================================================================
@@ -39,8 +59,8 @@ class CouponModel extends Model
     public function rules()
     {
         return [
-            ['someAttribute', 'string'],
-            ['someAttribute', 'default', 'value' => 'Some Default'],
+            [['couponPin', 'consumerId'], 'string'],
+            [['couponPin', 'consumerId'], 'required'],
         ];
     }
 }

@@ -19,6 +19,10 @@ use craft\db\ActiveRecord;
  * @author    Superbig
  * @package   Valassis
  * @since     1.0.0
+ *
+ * @property int   $id
+ * @property int   $siteId
+ * @property array $payload
  */
 class ImportRecord extends ActiveRecord
 {
@@ -30,6 +34,6 @@ class ImportRecord extends ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%valassis_importrecord}}';
+        return '{{%valassis_imports}}';
     }
 }

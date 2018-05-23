@@ -19,6 +19,11 @@ use craft\base\Model;
  * @author    Superbig
  * @package   Valassis
  * @since     1.0.0
+ *
+ * @property int    $id
+ * @property int    $siteId
+ * @property string $name
+ * @property string $email
  */
 class CustomerModel extends Model
 {
@@ -28,7 +33,10 @@ class CustomerModel extends Model
     /**
      * @var string
      */
-    public $someAttribute = 'Some Default';
+    public $id;
+    public $siteId;
+    public $name  = '';
+    public $email = '';
 
     // Public Methods
     // =========================================================================
@@ -39,8 +47,8 @@ class CustomerModel extends Model
     public function rules()
     {
         return [
-            ['someAttribute', 'string'],
-            ['someAttribute', 'default', 'value' => 'Some Default'],
+            [['name', 'email'], 'required'],
+            ['email', 'email'],
         ];
     }
 }

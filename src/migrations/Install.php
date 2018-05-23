@@ -31,6 +31,10 @@ class Install extends Migration
      */
     public $driver;
 
+    public $couponTable   = '{{%valassis_coupons}}';
+    public $customerTable = '{{%valassis_customers}}';
+    public $importTable   = '{{%valassis_imports}}';
+
     // Public Methods
     // =========================================================================
 
@@ -51,7 +55,7 @@ class Install extends Migration
         return true;
     }
 
-   /**
+    /**
      * @inheritdoc
      */
     public function safeDown()
@@ -72,50 +76,55 @@ class Install extends Migration
     {
         $tablesCreated = false;
 
-        $tableSchema = Craft::$app->db->schema->getTableSchema('{{%valassis_couponrecord}}');
+        $tableSchema = Craft::$app->db->schema->getTableSchema($this->couponTable);
         if ($tableSchema === null) {
             $tablesCreated = true;
             $this->createTable(
-                '{{%valassis_couponrecord}}',
+                $this->couponTable,
                 [
-                    'id' => $this->primaryKey(),
+                    'id'          => $this->primaryKey(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),
-                    'uid' => $this->uid(),
-                    'siteId' => $this->integer()->notNull(),
-                    'some_field' => $this->string(255)->notNull()->defaultValue(''),
+                    'uid'         => $this->uid(),
+                    'siteId'      => $this->integer()->notNull(),
+                    'customerId'  => $this->integer()->null()->defaultValue(null),
+                    'importId'    => $this->integer()->null()->defaultValue(null),
+                    'couponPin'   => $this->string(255)->notNull()->defaultValue(''),
+                    'consumerId'  => $this->string(255)->notNull()->defaultValue(''),
+                    'response'    => $this->text()->defaultValue(null),
                 ]
             );
         }
 
-        $tableSchema = Craft::$app->db->schema->getTableSchema('{{%valassis_customerrecord}}');
+        $tableSchema = Craft::$app->db->schema->getTableSchema($this->customerTable);
         if ($tableSchema === null) {
             $tablesCreated = true;
             $this->createTable(
-                '{{%valassis_customerrecord}}',
+                $this->customerTable,
                 [
-                    'id' => $this->primaryKey(),
+                    'id'          => $this->primaryKey(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),
-                    'uid' => $this->uid(),
-                    'siteId' => $this->integer()->notNull(),
-                    'some_field' => $this->string(255)->notNull()->defaultValue(''),
+                    'uid'         => $this->uid(),
+                    'siteId'      => $this->integer()->notNull(),
+                    'name'        => $this->string(255)->notNull()->defaultValue(''),
+                    'email'       => $this->string(255)->notNull()->defaultValue(''),
                 ]
             );
         }
 
-        $tableSchema = Craft::$app->db->schema->getTableSchema('{{%valassis_importrecord}}');
+        $tableSchema = Craft::$app->db->schema->getTableSchema($this->importTable);
         if ($tableSchema === null) {
             $tablesCreated = true;
             $this->createTable(
-                '{{%valassis_importrecord}}',
+                $this->importTable,
                 [
-                    'id' => $this->primaryKey(),
+                    'id'          => $this->primaryKey(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),
-                    'uid' => $this->uid(),
-                    'siteId' => $this->integer()->notNull(),
-                    'some_field' => $this->string(255)->notNull()->defaultValue(''),
+                    'uid'         => $this->uid(),
+                    'siteId'      => $this->integer()->notNull(),
+                    'payload'     => $this->text()->null()->defaultValue(null),
                 ]
             );
         }
@@ -130,50 +139,26 @@ class Install extends Migration
     {
         $this->createIndex(
             $this->db->getIndexName(
-                '{{%valassis_couponrecord}}',
-                'some_field',
-                true
+                $this->couponTable,
+                'importId',
+                false
             ),
-            '{{%valassis_couponrecord}}',
-            'some_field',
-            true
+            $this->couponTable,
+            'importId',
+            false
         );
-        // Additional commands depending on the db driver
-        switch ($this->driver) {
-            case DbConfig::DRIVER_MYSQL:
-                break;
-            case DbConfig::DRIVER_PGSQL:
-                break;
-        }
 
         $this->createIndex(
             $this->db->getIndexName(
-                '{{%valassis_customerrecord}}',
-                'some_field',
-                true
+                $this->customerTable,
+                'email',
+                false
             ),
-            '{{%valassis_customerrecord}}',
-            'some_field',
-            true
+            $this->customerTable,
+            'email',
+            false
         );
-        // Additional commands depending on the db driver
-        switch ($this->driver) {
-            case DbConfig::DRIVER_MYSQL:
-                break;
-            case DbConfig::DRIVER_PGSQL:
-                break;
-        }
 
-        $this->createIndex(
-            $this->db->getIndexName(
-                '{{%valassis_importrecord}}',
-                'some_field',
-                true
-            ),
-            '{{%valassis_importrecord}}',
-            'some_field',
-            true
-        );
         // Additional commands depending on the db driver
         switch ($this->driver) {
             case DbConfig::DRIVER_MYSQL:
@@ -189,8 +174,8 @@ class Install extends Migration
     protected function addForeignKeys()
     {
         $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%valassis_couponrecord}}', 'siteId'),
-            '{{%valassis_couponrecord}}',
+            $this->db->getForeignKeyName($this->couponTable, 'siteId'),
+            $this->couponTable,
             'siteId',
             '{{%sites}}',
             'id',
@@ -199,8 +184,28 @@ class Install extends Migration
         );
 
         $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%valassis_customerrecord}}', 'siteId'),
-            '{{%valassis_customerrecord}}',
+            $this->db->getForeignKeyName($this->couponTable, 'customerId'),
+            $this->couponTable,
+            'customerId',
+            $this->customerTable,
+            'id',
+            'SET NULL',
+            'CASCADE'
+        );
+
+        $this->addForeignKey(
+            $this->db->getForeignKeyName($this->couponTable, 'importId'),
+            $this->couponTable,
+            'importId',
+            $this->importTable,
+            'id',
+            'CASCADE',
+            'CASCADE'
+        );
+
+        $this->addForeignKey(
+            $this->db->getForeignKeyName($this->customerTable, 'siteId'),
+            $this->customerTable,
             'siteId',
             '{{%sites}}',
             'id',
@@ -209,8 +214,8 @@ class Install extends Migration
         );
 
         $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%valassis_importrecord}}', 'siteId'),
-            '{{%valassis_importrecord}}',
+            $this->db->getForeignKeyName($this->importTable, 'siteId'),
+            $this->importTable,
             'siteId',
             '{{%sites}}',
             'id',
@@ -231,10 +236,10 @@ class Install extends Migration
      */
     protected function removeTables()
     {
-        $this->dropTableIfExists('{{%valassis_couponrecord}}');
+        $this->dropTableIfExists($this->couponTable);
 
-        $this->dropTableIfExists('{{%valassis_customerrecord}}');
+        $this->dropTableIfExists($this->customerTable);
 
-        $this->dropTableIfExists('{{%valassis_importrecord}}');
+        $this->dropTableIfExists($this->importTable);
     }
 }

@@ -19,6 +19,11 @@ use craft\db\ActiveRecord;
  * @author    Superbig
  * @package   Valassis
  * @since     1.0.0
+ *
+ * @property int    $id
+ * @property int    $siteId
+ * @property string $name
+ * @property string $email
  */
 class CustomerRecord extends ActiveRecord
 {
@@ -30,6 +35,6 @@ class CustomerRecord extends ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%valassis_customerrecord}}';
+        return '{{%valassis_customers}}';
     }
 }

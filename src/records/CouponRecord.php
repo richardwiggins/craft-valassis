@@ -19,6 +19,14 @@ use craft\db\ActiveRecord;
  * @author    Superbig
  * @package   Valassis
  * @since     1.0.0
+ *
+ * @property int    $id
+ * @property int    $siteId
+ * @property int    $customerId
+ * @property int    $importId
+ * @property string $couponPin
+ * @property string $consumerId
+ * @property array  $response
  */
 class CouponRecord extends ActiveRecord
 {
@@ -30,6 +38,6 @@ class CouponRecord extends ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%valassis_couponrecord}}';
+        return '{{%valassis_coupons}}';
     }
 }
