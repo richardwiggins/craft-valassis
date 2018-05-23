@@ -58,8 +58,9 @@ class ImportController extends Controller
     {
         $this->requirePostRequest();
 
-        $import       = new ImportModel();
-        $import->file = UploadedFile::getInstanceByName('couponFile');
+        $import           = new ImportModel();
+        $import->scenario = ImportModel::SCENARIO_UPLOAD;
+        $import->file     = UploadedFile::getInstanceByName('couponFile');
 
         if (!$import->validate(['file'])) {
             return $this->asJson([

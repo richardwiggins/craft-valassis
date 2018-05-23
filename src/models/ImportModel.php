@@ -23,6 +23,12 @@ use superbig\valassis\base\BaseModel;
  */
 class ImportModel extends BaseModel
 {
+    // Constants
+    // =========================================================================
+
+    const SCENARIO_UPLOAD = 'upload';
+    const SCENARIO_IMPORT = 'import';
+
     // Public Properties
     // =========================================================================
 
@@ -45,6 +51,14 @@ class ImportModel extends BaseModel
         return [
             [['file', 'payload'], 'required'],
             [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => 'csv, txt'],
+        ];
+    }
+
+    public function scenarios()
+    {
+        return [
+            self::SCENARIO_UPLOAD => ['file'],
+            self::SCENARIO_IMPORT => ['payload'],
         ];
     }
 }
