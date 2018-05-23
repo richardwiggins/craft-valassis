@@ -10,9 +10,6 @@
 
 namespace superbig\valassis\models;
 
-use superbig\valassis\Valassis;
-
-use Craft;
 use craft\base\Model;
 
 /**
@@ -28,7 +25,12 @@ class Settings extends Model
     /**
      * @var string
      */
-    public $someAttribute = 'Some Default';
+    public $username = '';
+
+    /**
+     * @var string
+     */
+    public $password = '';
 
     // Public Methods
     // =========================================================================
@@ -39,8 +41,13 @@ class Settings extends Model
     public function rules()
     {
         return [
-            ['someAttribute', 'string'],
-            ['someAttribute', 'default', 'value' => 'Some Default'],
+            [['username', 'password'], 'string'],
+            [['username', 'password'], 'required'],
         ];
+    }
+
+    public function isEnabled()
+    {
+        return !empty($this->username) && !empty($this->password);
     }
 }

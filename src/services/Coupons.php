@@ -10,6 +10,8 @@
 
 namespace superbig\valassis\services;
 
+use superbig\valassis\models\CouponModel;
+use superbig\valassis\records\CouponRecord;
 use superbig\valassis\Valassis;
 
 use Craft;
@@ -25,10 +27,26 @@ class Coupons extends Component
     // Public Methods
     // =========================================================================
 
+    /**
+     * @return array|null
+     */
+    public function getAllCoupons()
+    {
+        $coupons = CouponRecord::find()->all();
+
+        if (!$coupons) {
+            return null;
+        }
+
+        return array_map(function(CouponRecord $record) {
+            return CouponModel::createFromRecord($record);
+        }, $coupons);
+    }
+
     /*
      * @return mixed
      */
-    public function exampleService()
+    public function saveCoupon()
     {
         $result = 'something';
         // Check our Plugin's settings for `someAttribute`

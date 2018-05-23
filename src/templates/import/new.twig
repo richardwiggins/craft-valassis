@@ -1,0 +1,71 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Valassis plugin for Craft CMS 3.x
+ *
+ * Valassis index.twig
+ *
+ * @author    Superbig
+ * @copyright Copyright (c) 2018 Superbig
+ * @link      https://superbig.co
+ * @package   Valassis
+ * @since     1.0.0
+ */
+#}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("superbig\\valassis\\assetbundles\\valassis\\ValassisAsset") %}
+{% do view.registerAssetBundle("superbig\\valassis\\assetbundles\\importcpsection\\ImportCPSectionAsset") %}
+
+{% set title = "Imports" %}
+{% set pluginCpUrl = url('valassis') %}
+
+{% set subnav = {
+    "coupons": { label: "Coupons"|t('valassis'), url: url(pluginCpUrl ~ '/coupons') },
+    "customers": { label: "Customers"|t('valassis'), url: url(pluginCpUrl ~ '/customers') },
+
+} %}
+{% set selectedSubnavItem = 'imports' %}
+
+{% set crumbs = [
+    { label: "Valassis", url: url(pluginCpUrl) },
+    { label: "Imports"|t('valassis'), url: url(pluginCpUrl ~ '/imports') },
+    { label: "New import"|t('valassis'), url: url(pluginCpUrl ~ '/imports/new') },
+] %}
+
+{% block content %}
+    {% set uploadField %}
+        <div class="valassis-field">
+            <div class="cp-image-controls">
+                <input type="file" name="couponFile" class="hidden"/>
+                <div class="btn upload">Select coupon</div>
+            </div>
+        </div>
+    {% endset %}
+
+    <div class="valassis-uploader js-uploader">
+        {{ forms.field({
+            label: 'Coupon file'|t('valassis'),
+            instructions: 'Upload the text file received from Valassis with the PIN/consumer ID combinations.'|t('valassis'),
+        }, uploadField) }}
+
+        <hr>
+
+        <div class="valassis-result-container js-resultsContainer">
+            <div class="valassis-import-result hidden js-importResult"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% js %}
+    var uploader = new ValassisUpload({
+    containerSelector: '.js-uploader',
+    resultSelector: '.js-importResult',
+    uploadAction: 'valassis/import/upload',
+    uploadButtonSelector: '.btn.upload',
+    fileInputSelector: 'input[name=couponFile]',
+    uploadParamName: 'couponFile',
+    });
+{% endjs %}

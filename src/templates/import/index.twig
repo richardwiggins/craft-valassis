@@ -17,58 +17,53 @@
 {% import "_includes/forms" as forms %}
 
 {% do view.registerAssetBundle("superbig\\valassis\\assetbundles\\valassis\\ValassisAsset") %}
-{% do view.registerAssetBundle("superbig\\valassis\\assetbundles\\couponscpsection\\CouponsCPSectionAsset") %}
+{% do view.registerAssetBundle("superbig\\valassis\\assetbundles\\indexcpsection\\IndexCPSectionAsset") %}
 
 {% set docsUrl = "https://github.com/sjelfull/valassis/blob/master/README.md" %}
-
-{% set title = "Coupons" %}
-
+{% set title = "Imports" %}
 {% set pluginCpUrl = url('valassis') %}
-
-{% set iconUrl = view.getAssetManager().getPublishedUrl('@superbig/valassis/assetbundles/couponscpsection/dist', true) ~ '/img/Coupons-icon.svg' %}
 
 {% set subnav = {
     "coupons": { label: "Coupons"|t('valassis'), url: url(pluginCpUrl ~ '/coupons') },
     "customers": { label: "Customers"|t('valassis'), url: url(pluginCpUrl ~ '/customers') },
 
 } %}
-{% set selectedSubnavItem = 'coupons' %}
+{% set selectedSubnavItem = 'imports' %}
 
 {% set crumbs = [
     { label: "Valassis", url: url(pluginCpUrl) },
-    { label: "Coupons"|t('valassis'), url: url(pluginCpUrl ~ '/coupons') },
+    { label: "Imports"|t('valassis'), url: url(pluginCpUrl ~ '/imports') },
 ] %}
 
-{% set extraPageHeaderHtml %}
+{% block actionButton %}
     <div class="buttons">
-        <a href="{{ pluginCpUrl }}" class="btn submit add icon">{{ "Click Me!"|t('valassis') }}</a>
+        <a href="{{ pluginCpUrl ~ '/imports/new' }}" class="btn submit add icon">{{ "New import"|t('valassis') }}</a>
     </div>
-{% endset %}
+{% endblock %}
 
 {% block content %}
-    <div id="no-coupons"{% if coupons %} class="hidden"{% endif %}>
-        <p>{{ "No coupons exist yet."|t('valassis') }}</p>
+    <div id="no-imports"{% if imports %} class="hidden"{% endif %}>
+        <p>{{ "No imports exist yet."|t('valassis') }}</p>
     </div>
 
-    {% if coupons %}
-        <table class="data fullwidth" id="coupons">
+    {% if imports %}
+        <table class="data fullwidth" id="imports">
             <thead>
             <tr>
-                <th>PIN</th>
-                <th>Consumer ID</th>
+                <th>Name</th>
+                <th>Date</th>
                 <th class="thin"></th>
             </tr>
             </thead>
             <tbody>
-            {% for coupon in coupons %}
-                {# @var coupon \superbig\valassis\models\CouponModel #}
+            {% for import in imports %}
                 <tr>
                     <td>
-                        <a href="{{ coupon.getCpEditUrl() }}">
-                            {{ coupon.couponPin }}
+                        <a href="{{ import.getCpEditUrl() }}">
+                            {{ import.name }}
                         </a>
                     </td>
-                    <td>{{ coupon.consumerId }}</td>
+                    <td>{{ import.dateCreated }}</td>
                     <td class="thin">
                         <a class="delete icon" title="{{ 'Delete'|t('valassis') }}" role="button"></a>
                     </td>
@@ -81,8 +76,8 @@
 
 {% js %}
     var adminTable = new Craft.AdminTable({
-    tableSelector: '#coupons',
-    noObjectsSelector: '#no-coupons',
-    deleteAction: 'valassis/coupons/delete'
+    tableSelector: '#imports',
+    noObjectsSelector: '#no-imports',
+    deleteAction: 'valassis/imports/delete'
     });
 {% endjs %}

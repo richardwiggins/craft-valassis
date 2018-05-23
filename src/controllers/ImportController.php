@@ -10,6 +10,8 @@
 
 namespace superbig\valassis\controllers;
 
+use craft\web\UploadedFile;
+use superbig\valassis\models\ImportModel;
 use superbig\valassis\Valassis;
 
 use Craft;
@@ -26,13 +28,6 @@ class ImportController extends Controller
     // Protected Properties
     // =========================================================================
 
-    /**
-     * @var    bool|array Allows anonymous access to this controller's actions.
-     *         The actions must be in 'kebab-case'
-     * @access protected
-     */
-    protected $allowAnonymous = ['index', 'do-something'];
-
     // Public Methods
     // =========================================================================
 
@@ -41,17 +36,71 @@ class ImportController extends Controller
      */
     public function actionIndex()
     {
-        $result = 'Welcome to the ImportController actionIndex() method';
-
-        return $result;
+        return $this->renderTemplate('valassis/import/index', [
+            'imports' => Valassis::$plugin->imports->getAllImports(),
+        ]);
     }
 
     /**
      * @return mixed
      */
-    public function actionDoSomething()
+    public function actionNew()
     {
-        $result = 'Welcome to the ImportController actionDoSomething() method';
+        return $this->renderTemplate('valassis/import/new', [
+            //'imports' => Valassis::$plugin->imports->getAllImports(),
+        ]);
+    }
+
+    /**
+     * @throws \yii\web\BadRequestHttpException
+     */
+    public function actionUpload()
+    {
+        $this->requirePostRequest();
+
+        $import       = new ImportModel();
+        $import->file = UploadedFile::getInstanceByName('couponFile');
+
+        if (!$import->validate(['file'])) {
+            return $this->asJson([
+                'success' => false,
+                'errors'  => $import->getErrors(),
+            ]);
+        }
+
+        $tempPath = $import->file->saveAsTempFile();
+
+        if (!$tempPath) {
+            $import->addError('file', $import->file->error);
+
+            return $this->asJson([
+                'success' => false,
+                'errors'  => $import->getErrors(),
+            ]);
+        }
+
+        $csv = array_map(function($input) {
+            return str_getcsv($input, "\t");
+        }, file($tempPath));
+
+        try {
+            $html = Craft::$app->getView()->renderTemplate('valassis/import/response-table', ['data' => $csv]);
+        } catch (\Exception $e) {
+            $html = null;
+        }
+
+        return $this->asJson([
+            'success' => true,
+            'result'  => $csv,
+            'html'    => $html,
+        ]);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function actionImport()
+    {
 
         return $result;
     }

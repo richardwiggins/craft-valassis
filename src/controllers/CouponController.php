@@ -10,6 +10,7 @@
 
 namespace superbig\valassis\controllers;
 
+use superbig\supersearch\SuperSearch;
 use superbig\valassis\Valassis;
 
 use Craft;
@@ -26,13 +27,6 @@ class CouponController extends Controller
     // Protected Properties
     // =========================================================================
 
-    /**
-     * @var    bool|array Allows anonymous access to this controller's actions.
-     *         The actions must be in 'kebab-case'
-     * @access protected
-     */
-    protected $allowAnonymous = ['index', 'do-something'];
-
     // Public Methods
     // =========================================================================
 
@@ -41,9 +35,9 @@ class CouponController extends Controller
      */
     public function actionIndex()
     {
-        $result = 'Welcome to the CouponController actionIndex() method';
-
-        return $result;
+        return $this->renderTemplate('valassis/coupons', [
+            'coupons' => Valassis::$plugin->coupons->getAllCoupons(),
+        ]);
     }
 
     /**

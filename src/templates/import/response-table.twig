@@ -1,0 +1,20 @@
+{% if data is defined %}
+    <table class="data fullwidth" id="imports">
+        <thead>
+        <tr>
+            <th>PIN</th>
+            <th>Consumer ID</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for line in data %}
+            <tr>
+                <td>
+                    {{ line[0] }}
+                </td>
+                <td>{{ line[1] }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
