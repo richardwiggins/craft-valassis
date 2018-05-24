@@ -10,7 +10,9 @@
 
 namespace superbig\valassis\models;
 
+use craft\helpers\UrlHelper;
 use superbig\valassis\base\BaseModel;
+use superbig\valassis\records\CouponRecord;
 
 /**
  * @author    Superbig
@@ -20,6 +22,7 @@ use superbig\valassis\base\BaseModel;
  * @property int   $id
  * @property int   $siteId
  * @property array $payload
+ * @property array $coupons
  */
 class ImportModel extends BaseModel
 {
@@ -39,9 +42,21 @@ class ImportModel extends BaseModel
     public $id;
     public $siteId;
     public $payload;
+    public $dateCreated;
+    public $coupons = [];
 
     // Public Methods
     // =========================================================================
+
+    public function getCpEditUrl()
+    {
+        return UrlHelper::cpUrl('valassis/imports/' . $this->id);
+    }
+
+    public function getCoupons()
+    {
+        return $this->coupons;
+    }
 
     /**
      * @inheritdoc

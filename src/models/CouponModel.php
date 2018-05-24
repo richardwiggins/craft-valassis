@@ -10,6 +10,8 @@
 
 namespace superbig\valassis\models;
 
+use craft\helpers\UrlHelper;
+use superbig\valassis\base\BaseModel;
 use superbig\valassis\records\CouponRecord;
 use superbig\valassis\Valassis;
 
@@ -29,7 +31,7 @@ use craft\base\Model;
  * @property string $consumerId
  * @property array  $response
  */
-class CouponModel extends Model
+class CouponModel extends BaseModel
 {
     // Public Properties
     // =========================================================================
@@ -42,16 +44,40 @@ class CouponModel extends Model
     public $consumerId;
     public $response;
 
+    /**
+     * @param CouponRecord $record
+     *
+     * @return static
+     */
     public static function createFromRecord(CouponRecord $record)
     {
         $model = new static();
-        $model->setAttributes($record->getAttributes());
+        $model->setAttributes($record->getAttributes(), false);
+
+        return $model;
+    }
+
+    /**
+     * @param $row
+     *
+     * @return static
+     */
+    public static function createFromImport($row)
+    {
+        $model         = new static();
+        $model->siteId = Craft::$app->getSites()->getCurrentSite()->id;
+        $model->setAttributes($row, false);
 
         return $model;
     }
 
     // Public Methods
     // =========================================================================
+
+    public function getCpEditUrl()
+    {
+        return UrlHelper::cpUrl('valassis/coupons/' . $this->id);
+    }
 
     /**
      * @inheritdoc

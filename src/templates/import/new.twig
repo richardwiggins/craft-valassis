@@ -28,14 +28,21 @@
 
 } %}
 {% set selectedSubnavItem = 'imports' %}
-
 {% set crumbs = [
     { label: "Valassis", url: url(pluginCpUrl) },
     { label: "Imports"|t('valassis'), url: url(pluginCpUrl ~ '/imports') },
     { label: "New import"|t('valassis'), url: url(pluginCpUrl ~ '/imports/new') },
 ] %}
+{% set fullPageForm = true %}
+
+{% block actionButton %}
+    <div class="buttons">
+        <button class="btn submit add js-createCoupons">{{ "Import"|t('valassis') }}</button>
+    </div>
+{% endblock %}
 
 {% block content %}
+    <input type="hidden" name="action" value="valassis/import/save">
     {% set uploadField %}
         <div class="valassis-field">
             <div class="cp-image-controls">

@@ -28,11 +28,21 @@ class Coupons extends Component
     // =========================================================================
 
     /**
+     * @param string $mode
+     *
      * @return array|null
      */
-    public function getAllCoupons()
+    public function getAllCoupons($mode = 'all')
     {
-        $coupons = CouponRecord::find()->all();
+        if (!$mode || $mode === 'used') {
+            $coupons = CouponRecord::find()->where(['not', ['customerId' => null]])->all();
+        }
+        elseif ($mode === 'unused') {
+            $coupons = CouponRecord::find()->where(['customerId' => null])->all();
+        }
+        else {
+            $coupons = CouponRecord::find()->all();
+        }
 
         if (!$coupons) {
             return null;
@@ -43,16 +53,46 @@ class Coupons extends Component
         }, $coupons);
     }
 
+    /**
+     * @param CouponModel[] $coupons
+     */
+    public function saveCoupons($coupons = [])
+    {
+        foreach ($coupons as $coupon) {
+            $this->saveCoupon($coupon);
+        }
+    }
+
     /*
      * @return mixed
      */
-    public function saveCoupon()
+    public function saveCoupon(CouponModel $coupon)
     {
-        $result = 'something';
-        // Check our Plugin's settings for `someAttribute`
-        if (Valassis::$plugin->getSettings()->someAttribute) {
+        if ($coupon->validate() === false) {
+            return false;
         }
 
-        return $result;
+        if ($coupon->id) {
+            $couponRecord = CouponRecord::findOne($coupon->id);
+
+            if ($couponRecord === null) {
+                return false;
+            }
+        }
+        else {
+            $couponRecord = new CouponRecord();
+        }
+
+        $couponRecord->setAttributes($coupon->getAttributes(), false);
+
+        // Save import
+        if ($couponRecord->save(false) === false) {
+            return false;
+        }
+
+        // Update import model ID
+        $coupon->id = $couponRecord->id;
+
+        return true;
     }
 }

@@ -10,6 +10,8 @@
 
 namespace superbig\valassis;
 
+use craft\contactform\events\SendEvent;
+use craft\contactform\Mailer;
 use craft\helpers\UrlHelper;
 use superbig\valassis\services\Coupons as CouponsService;
 use superbig\valassis\services\Customers as CustomersService;
@@ -187,7 +189,7 @@ class Valassis extends Plugin
             'valassis/coupons/<id:\d+>' => 'valassis/coupon/edit',
             'valassis/imports'          => 'valassis/import/index',
             'valassis/imports/new'      => 'valassis/import/new',
-            'valassis/imports/<id:\d+>' => 'valassis/import/edit',
+            'valassis/imports/<id:\d+>' => 'valassis/import/details',
             //'valassis/settings'         => 'valassis/settings',
         ];
     }

@@ -10,7 +10,9 @@
 
 namespace superbig\valassis\controllers;
 
+use craft\helpers\UrlHelper;
 use craft\web\UploadedFile;
+use superbig\valassis\models\CouponModel;
 use superbig\valassis\models\ImportModel;
 use superbig\valassis\Valassis;
 
@@ -52,6 +54,16 @@ class ImportController extends Controller
     }
 
     /**
+     * @return mixed
+     */
+    public function actionDetails(int $id = null)
+    {
+        return $this->renderTemplate('valassis/import/details', [
+            'import' => Valassis::$plugin->imports->getImportById($id),
+        ]);
+    }
+
+    /**
      * @throws \yii\web\BadRequestHttpException
      */
     public function actionUpload()
@@ -84,6 +96,10 @@ class ImportController extends Controller
             return str_getcsv($input, "\t");
         }, file($tempPath));
 
+        $csv = array_filter($csv, function($line) {
+            return strlen($line[0]) === 25;
+        });
+
         try {
             $html = Craft::$app->getView()->renderTemplate('valassis/import/response-table', ['data' => $csv]);
         } catch (\Exception $e) {
@@ -100,9 +116,29 @@ class ImportController extends Controller
     /**
      * @return mixed
      */
-    public function actionImport()
+    public function actionSave()
     {
+        $coupons          = Craft::$app->getRequest()->getRequiredParam('coupons');
+        $import           = new ImportModel();
+        $import->scenario = ImportModel::SCENARIO_IMPORT;
+        $import->payload  = $coupons;
+        $import->siteId   = Craft::$app->getSites()->getCurrentSite()->id;
 
-        return $result;
+        $imported = Valassis::$plugin->imports->saveImport($import);
+
+        if ($imported) {
+            $coupons = array_map(function($row) use ($import) {
+                $coupon           = CouponModel::createFromImport($row);
+                $coupon->importId = $import->id;
+
+                return $coupon;
+            }, $coupons);
+        }
+
+        Valassis::$plugin->coupons->saveCoupons($coupons);
+
+        return $this->redirect(UrlHelper::cpUrl('valassis/imports'));
+
+        return $this->redirect(UrlHelper::cpUrl('valassis/imports/' . $import->id));
     }
 }

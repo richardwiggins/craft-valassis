@@ -17,4 +17,13 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <div class="inputs hidden">
+        {% for line in data %}
+            {% set id = 'coupon-' ~ loop.index %}
+            <input type="hidden" name="coupons[{{ id }}]" value="">
+            <input type="hidden" name="coupons[{{ id }}][couponPin]" value="{{ line[0] }}">
+            <input type="hidden" name="coupons[{{ id }}][consumerId]" value="{{ line[1] }}">
+        {% endfor %}
+    </div>
 {% endif %}

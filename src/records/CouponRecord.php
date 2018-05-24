@@ -40,4 +40,9 @@ class CouponRecord extends ActiveRecord
     {
         return '{{%valassis_coupons}}';
     }
+
+    public function getImport()
+    {
+        return $this->hasOne(ImportRecord::class, ['id' => 'importId']);
+    }
 }

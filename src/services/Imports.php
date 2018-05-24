@@ -10,7 +10,9 @@
 
 namespace superbig\valassis\services;
 
+use superbig\valassis\models\CouponModel;
 use superbig\valassis\models\ImportModel;
+use superbig\valassis\records\CouponRecord;
 use superbig\valassis\records\ImportRecord;
 use superbig\valassis\Valassis;
 
@@ -34,6 +36,20 @@ class Imports extends Component
         return ImportModel::populateModels($importRecords, false);
     }
 
+    public function getImportById($id = null)
+    {
+        /** @var ImportRecord $importRecord */
+        $importRecord = ImportRecord::find()->with('coupons')->where(['id' => $id])->limit(1)->one();
+
+        /** @var ImportModel $model */
+        $model          = ImportModel::populateModel($importRecord, false);
+        $model->coupons = array_map(function(CouponRecord $coupon) {
+            return CouponModel::createFromRecord($coupon);
+        }, $importRecord->coupons);
+
+        return $model;
+    }
+
     /*
      * @return mixed
      */
@@ -55,9 +71,6 @@ class Imports extends Component
         }
 
         $importRecord->setAttributes($import->getAttributes(), false);
-
-        // Get user ID
-        $importRecord->userId = Craft::$app->getUser()->getIdentity()->id;
 
         // Save import
         if ($importRecord->save(false) === false) {
