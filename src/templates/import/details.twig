@@ -1,0 +1,75 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Valassis plugin for Craft CMS 3.x
+ *
+ * Valassis index.twig
+ *
+ * @author    Superbig
+ * @copyright Copyright (c) 2018 Superbig
+ * @link      https://superbig.co
+ * @package   Valassis
+ * @since     1.0.0
+ */
+#}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("superbig\\valassis\\assetbundles\\valassis\\ValassisAsset") %}
+{% do view.registerAssetBundle("superbig\\valassis\\assetbundles\\indexcpsection\\IndexCPSectionAsset") %}
+
+{% set docsUrl = "https://github.com/sjelfull/valassis/blob/master/README.md" %}
+{% set title = "Import " ~ import.dateCreated %}
+{% set pluginCpUrl = url('valassis') %}
+
+{% set subnav = {
+    "coupons": { label: "Coupons"|t('valassis'), url: url(pluginCpUrl ~ '/coupons') },
+    "customers": { label: "Customers"|t('valassis'), url: url(pluginCpUrl ~ '/customers') },
+
+} %}
+{% set selectedSubnavItem = 'imports' %}
+
+{% set crumbs = [
+    { label: "Valassis", url: url(pluginCpUrl) },
+    { label: "Imports"|t('valassis'), url: url(pluginCpUrl ~ '/imports') },
+    { label: "Import"|t('valassis'), url: url(pluginCpUrl ~ '/imports/' ~ import.id) },
+] %}
+
+{% block content %}
+    {% if import.coupons %}
+        <table class="data fullwidth" id="coupons">
+            <thead>
+            <tr>
+                <th>PIN</th>
+                <th>Consumer ID</th>
+                <th class="thin"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for coupon in import.coupons %}
+                {# @var coupon \superbig\valassis\models\CouponModel #}
+                <tr>
+                    <td>
+                        <a href="{{ coupon.getCpEditUrl() }}">
+                            {{ coupon.couponPin }}
+                        </a>
+                    </td>
+                    <td>{{ coupon.consumerId }}</td>
+                    <td class="thin">
+                        <a class="delete icon" title="{{ 'Delete'|t('valassis') }}" role="button"></a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
+
+{% js %}
+    var adminTable = new Craft.AdminTable({
+    tableSelector: '#imports',
+    noObjectsSelector: '#no-imports',
+    deleteAction: 'valassis/imports/delete'
+    });
+{% endjs %}

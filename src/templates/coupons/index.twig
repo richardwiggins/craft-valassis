@@ -45,6 +45,17 @@
     </div>
 {% endset %}
 
+{% block sidebar %}
+    <nav>
+        <ul>
+            <li><a href="{{ url('valassis/coupons', { mode: 'all' }) }}" class="{{ mode == 'all' ? 'sel' }}"><span class="label">All coupons</span><span class="cpelementcount-pill">40</span></a></li>
+            <li><a href="{{ url('valassis/coupons', { mode: 'used' }) }}" class="{{ mode == 'used' ? 'sel' }}" ><span class="label">Used coupons</span><span class="cpelementcount-pill">30</span></a></li>
+            <li><a href="{{ url('valassis/coupons', { mode: 'unused' }) }}" class="{{ mode == 'unused' ? 'sel' }}" ><span class="label">Unused coupons</span><span class="cpelementcount-pill">60</span></a></li>
+            {# <li class="heading"><span>Channels</span></li>#}
+        </ul>
+    </nav>
+{% endblock %}
+
 {% block content %}
     <div id="no-coupons"{% if coupons %} class="hidden"{% endif %}>
         <p>{{ "No coupons exist yet."|t('valassis') }}</p>
