@@ -34,8 +34,11 @@ class CouponController extends Controller
      */
     public function actionIndex()
     {
-        return $this->renderTemplate('valassis/coupons', [
-            'coupons' => Valassis::$plugin->coupons->getAllCoupons(),
+        $mode = Craft::$app->getRequest()->getParam('mode', 'all');
+
+        return $this->renderTemplate('valassis/coupons/index', [
+            'mode'    => $mode,
+            'coupons' => Valassis::$plugin->coupons->getAllCoupons($mode),
         ]);
     }
 
