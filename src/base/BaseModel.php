@@ -42,6 +42,15 @@ abstract class BaseModel extends Model
         $model = new $class();
         $model->setAttributes($values->getAttributes(), $safeOnly);
 
+        if (!empty($values->relationships)) {
+            foreach ($values->relationships as $key) {
+                $model->$key = $values->$key;
+                $model->setAttributes([
+                    $key => $values->$key,
+                ], false);
+            }
+        }
+
         return $model;
     }
 
