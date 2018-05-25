@@ -50,8 +50,8 @@
         <table class="data fullwidth" id="imports">
             <thead>
             <tr>
-                <th>Coupons</th>
                 <th>Date</th>
+                <th>Coupons</th>
                 <th class="thin"></th>
             </tr>
             </thead>
@@ -63,7 +63,7 @@
                             {{ import.dateCreated }}
                         </a>
                     </td>
-                    <td>{{ import.dateCreated }}</td>
+                    <td>{{ import.coupons | length }} coupons</td>
                     <td class="thin">
                         <a class="delete icon" title="{{ 'Delete'|t('valassis') }}" role="button"></a>
                     </td>

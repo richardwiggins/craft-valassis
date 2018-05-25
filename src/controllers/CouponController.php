@@ -38,6 +38,11 @@ class CouponController extends Controller
 
         return $this->renderTemplate('valassis/coupons/index', [
             'mode'    => $mode,
+            'count'   => [
+                'all'    => Valassis::$plugin->coupons->getCouponsCount('all'),
+                'unused' => Valassis::$plugin->coupons->getCouponsCount('unused'),
+                'used'   => Valassis::$plugin->coupons->getCouponsCount('used'),
+            ],
             'coupons' => Valassis::$plugin->coupons->getAllCoupons($mode),
         ]);
     }

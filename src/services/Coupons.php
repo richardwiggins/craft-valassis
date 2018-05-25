@@ -54,6 +54,26 @@ class Coupons extends Component
     }
 
     /**
+     * @param string $mode
+     *
+     * @return int
+     */
+    public function getCouponsCount($mode = 'all')
+    {
+        if (!$mode || $mode === 'used') {
+            $count = CouponRecord::find()->where(['not', ['customerId' => null]])->count();
+        }
+        elseif ($mode === 'unused') {
+            $count = CouponRecord::find()->where(['customerId' => null])->count();
+        }
+        else {
+            $count = CouponRecord::find()->count();
+        }
+
+        return $count;
+    }
+
+    /**
      * @param CouponModel[] $coupons
      */
     public function saveCoupons($coupons = [])

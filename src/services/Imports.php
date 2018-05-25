@@ -31,7 +31,7 @@ class Imports extends Component
 
     public function getAllImports()
     {
-        $importRecords = ImportRecord::find()->all();
+        $importRecords = ImportRecord::find()->with('coupons')->all();
 
         return ImportModel::populateModels($importRecords, false);
     }
