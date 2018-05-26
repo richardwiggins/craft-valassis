@@ -32,6 +32,16 @@ class Settings extends Model
      */
     public $password = '';
 
+    /**
+     * @var string
+     */
+    public $printUrl = '';
+
+    /**
+     * @var array
+     */
+    public $couponEmailHandles = [];
+
     // Public Methods
     // =========================================================================
 
@@ -42,12 +52,17 @@ class Settings extends Model
     {
         return [
             [['username', 'password'], 'string'],
-            [['username', 'password'], 'required'],
+            [['username', 'password', 'printUrl'], 'required'],
         ];
     }
 
     public function isEnabled()
     {
         return !empty($this->username) && !empty($this->password);
+    }
+
+    public function getAuthPair()
+    {
+        return [$this->username, $this->password];
     }
 }

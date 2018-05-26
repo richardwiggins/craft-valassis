@@ -43,6 +43,7 @@
             <tr>
                 <th>PIN</th>
                 <th>Consumer ID</th>
+                <th>Site</th>
                 <th class="thin"></th>
             </tr>
             </thead>
@@ -56,6 +57,7 @@
                         </a>
                     </td>
                     <td>{{ coupon.consumerId }}</td>
+                    <td>{{ coupon.getSite().name ?? '' }}</td>
                     <td class="thin">
                         <a class="delete icon" title="{{ 'Delete'|t('valassis') }}" role="button"></a>
                     </td>

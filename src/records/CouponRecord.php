@@ -26,6 +26,8 @@ use craft\db\ActiveRecord;
  * @property int    $importId
  * @property string $couponPin
  * @property string $consumerId
+ * @property mixed  $customer
+ * @property mixed  $import
  * @property array  $response
  */
 class CouponRecord extends ActiveRecord
@@ -44,5 +46,11 @@ class CouponRecord extends ActiveRecord
     public function getImport()
     {
         return $this->hasOne(ImportRecord::class, ['id' => 'importId']);
+    }
+
+    public function getCustomer()
+    {
+        return $this->hasOne(CustomerRecord::class, ['id' => 'customerId']);
+
     }
 }

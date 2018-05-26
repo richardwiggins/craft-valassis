@@ -10,6 +10,7 @@
 
 namespace superbig\valassis\variables;
 
+use superbig\valassis\models\CustomerModel;
 use superbig\valassis\Valassis;
 
 use Craft;
@@ -25,15 +26,19 @@ class ValassisVariable
     // =========================================================================
 
     /**
-     * @param null $optional
+     * @param string $email
+     * @param string $name
+     *
      * @return string
+     * @throws \craft\errors\SiteNotFoundException
      */
-    public function exampleVariable($optional = null)
+    public function createCouponForCustomer($email = '', $name = '')
     {
-        $result = "And away we go to the Twig template...";
-        if ($optional) {
-            $result = "I'm feeling optional today...";
-        }
-        return $result;
+        $customer         = new CustomerModel();
+        $customer->email  = $email;
+        $customer->name   = $name;
+        $customer->siteId = Craft::$app->getSites()->getCurrentSite()->id;
+
+        return Valassis::$plugin->coupons->createCouponForCustomer($customer);
     }
 }

@@ -50,6 +50,18 @@ class Imports extends Component
         return $model;
     }
 
+    /**
+     * @param $id
+     *
+     * @return int
+     */
+    public function deleteById($id)
+    {
+        $importRecord = ImportRecord::deleteAll(['id' => $id]);
+
+        return $importRecord;
+    }
+
     /*
      * @return mixed
      */

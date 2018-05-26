@@ -10,6 +10,7 @@
 
 namespace superbig\valassis\controllers;
 
+use JasonGrimes\Paginator;
 use superbig\valassis\Valassis;
 
 use Craft;
@@ -34,26 +35,35 @@ class CouponController extends Controller
      */
     public function actionIndex()
     {
-        $mode = Craft::$app->getRequest()->getParam('mode', 'all');
+        $mode         = Craft::$app->getRequest()->getParam('mode', 'all');
+        $currentPage  = Craft::$app->getRequest()->getParam('page', 1);
+        $count        = [
+            'all'    => Valassis::$plugin->coupons->getCouponsCount('all'),
+            'unused' => Valassis::$plugin->coupons->getCouponsCount('unused'),
+            'used'   => Valassis::$plugin->coupons->getCouponsCount('used'),
+        ];
+        $itemsPerPage = 30;
+        $offset       = ($currentPage - 1) * $itemsPerPage;
+        $urlPattern   = '/admin/valassis/coupons?page=(:num)&mode=' . $mode;
+        $paginator    = new Paginator($count[ $mode ], $itemsPerPage, $currentPage, $urlPattern);
 
         return $this->renderTemplate('valassis/coupons/index', [
-            'mode'    => $mode,
-            'count'   => [
-                'all'    => Valassis::$plugin->coupons->getCouponsCount('all'),
-                'unused' => Valassis::$plugin->coupons->getCouponsCount('unused'),
-                'used'   => Valassis::$plugin->coupons->getCouponsCount('used'),
-            ],
-            'coupons' => Valassis::$plugin->coupons->getAllCoupons($mode),
+            'mode'      => $mode,
+            'count'     => $count,
+            'paginator' => $paginator,
+            'coupons'   => Valassis::$plugin->coupons->getAllCoupons($mode, $offset, $itemsPerPage),
         ]);
     }
 
     /**
+     * @param int|null $id
+     *
      * @return mixed
      */
-    public function actionDoSomething()
+    public function actionDetails(int $id = null)
     {
-        $result = 'Welcome to the CouponController actionDoSomething() method';
-
-        return $result;
+        return $this->renderTemplate('valassis/coupons/details', [
+            'coupon' => Valassis::$plugin->coupons->getCouponById($id),
+        ]);
     }
 }

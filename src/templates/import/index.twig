@@ -57,7 +57,7 @@
             </thead>
             <tbody>
             {% for import in imports %}
-                <tr>
+                <tr data-id="{{ import.id }}" data-name="{{ import.dateCreated|t('valassis') }}">
                     <td>
                         <a href="{{ import.getCpEditUrl() }}">
                             {{ import.dateCreated }}
@@ -76,8 +76,8 @@
 
 {% js %}
     var adminTable = new Craft.AdminTable({
-    tableSelector: '#imports',
-    noObjectsSelector: '#no-imports',
-    deleteAction: 'valassis/imports/delete'
+        tableSelector: '#imports',
+        noObjectsSelector: '#no-imports',
+        deleteAction: 'valassis/import/delete'
     });
 {% endjs %}

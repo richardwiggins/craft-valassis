@@ -37,7 +37,7 @@
 
 {% block actionButton %}
     <div class="buttons">
-        <button class="btn submit add js-createCoupons">{{ "Import"|t('valassis') }}</button>
+        <button class="btn submit add js-createCoupons disabled" disabled>{{ "Import"|t('valassis') }}</button>
     </div>
 {% endblock %}
 
@@ -53,6 +53,14 @@
     {% endset %}
 
     <div class="valassis-uploader js-uploader">
+        {{ forms.selectField({
+            label: "Site"|t('aws-s3'),
+            instructions: "Select which site to make these coupons available."|t('valassis'),
+            id: 'siteId',
+            name: 'siteId',
+            options: sites,
+        }) }}
+
         {{ forms.field({
             label: 'Coupon file'|t('valassis'),
             instructions: 'Upload the text file received from Valassis with the PIN/consumer ID combinations.'|t('valassis'),
@@ -72,6 +80,7 @@
     resultSelector: '.js-importResult',
     uploadAction: 'valassis/import/upload',
     uploadButtonSelector: '.btn.upload',
+    importButtonSelector: '.js-createCoupons',
     fileInputSelector: 'input[name=couponFile]',
     uploadParamName: 'couponFile',
     });

@@ -18,15 +18,9 @@
 
 {% do view.registerAssetBundle("superbig\\valassis\\assetbundles\\valassis\\ValassisAsset") %}
 {% do view.registerAssetBundle("superbig\\valassis\\assetbundles\\couponscpsection\\CouponsCPSectionAsset") %}
-
 {% set docsUrl = "https://github.com/sjelfull/valassis/blob/master/README.md" %}
-
 {% set title = "Coupons" %}
-
 {% set pluginCpUrl = url('valassis') %}
-
-{% set iconUrl = view.getAssetManager().getPublishedUrl('@superbig/valassis/assetbundles/couponscpsection/dist', true) ~ '/img/Coupons-icon.svg' %}
-
 {% set subnav = {
     "coupons": { label: "Coupons"|t('valassis'), url: url(pluginCpUrl ~ '/coupons') },
     "customers": { label: "Customers"|t('valassis'), url: url(pluginCpUrl ~ '/customers') },
@@ -67,6 +61,7 @@
             <tr>
                 <th>PIN</th>
                 <th>Consumer ID</th>
+                <th>Site</th>
                 <th class="thin"></th>
             </tr>
             </thead>
@@ -80,6 +75,7 @@
                         </a>
                     </td>
                     <td>{{ coupon.consumerId }}</td>
+                    <td>{{ coupon.getSite().name ?? '' }}</td>
                     <td class="thin">
                         <a class="delete icon" title="{{ 'Delete'|t('valassis') }}" role="button"></a>
                     </td>
@@ -87,6 +83,10 @@
             {% endfor %}
             </tbody>
         </table>
+
+        <div class="pagination-wrapper">
+            {% include 'valassis/_pagination' with { paginator: paginator } %}
+        </div>
     {% endif %}
 {% endblock %}
 

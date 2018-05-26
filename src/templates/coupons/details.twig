@@ -1,0 +1,45 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Valassis plugin for Craft CMS 3.x
+ *
+ * Valassis index.twig
+ *
+ * @author    Superbig
+ * @copyright Copyright (c) 2018 Superbig
+ * @link      https://superbig.co
+ * @package   Valassis
+ * @since     1.0.0
+ */
+#}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("superbig\\valassis\\assetbundles\\valassis\\ValassisAsset") %}
+{% do view.registerAssetBundle("superbig\\valassis\\assetbundles\\couponscpsection\\CouponsCPSectionAsset") %}
+
+{% set docsUrl = "https://github.com/sjelfull/valassis/blob/master/README.md" %}
+{% set title = "Coupon #" ~ coupon.id %}
+{% set pluginCpUrl = url('valassis') %}
+
+{% set subnav = {
+    "coupons": { label: "Coupons"|t('valassis'), url: url(pluginCpUrl ~ '/coupons') },
+    "customers": { label: "Customers"|t('valassis'), url: url(pluginCpUrl ~ '/customers') },
+
+} %}
+{% set selectedSubnavItem = 'coupons' %}
+{% set crumbs = [
+    { label: "Valassis", url: url(pluginCpUrl) },
+    { label: "Coupons"|t('valassis'), url: url(pluginCpUrl ~ '/coupons') },
+    { label: "Coupon details"|t('valassis'), url: url(pluginCpUrl ~ '/coupons/' ~ coupon.id) },
+] %}
+
+{% block content %}
+    {# @var coupon \superbig\valassis\models\CouponModel #}
+    <ul>
+        <li>Consumer ID: {{ coupon.consumerId }}</li>
+        <li>PIN: {{ coupon.couponPin }}</li>
+        <li>Site: {{ coupon.getSite().name }}</li>
+    </ul>
+{% endblock %}

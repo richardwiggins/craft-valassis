@@ -10,7 +10,10 @@
 
 namespace superbig\valassis\services;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use superbig\valassis\models\CouponModel;
+use superbig\valassis\models\CustomerModel;
 use superbig\valassis\records\CouponRecord;
 use superbig\valassis\Valassis;
 
@@ -30,18 +33,29 @@ class Coupons extends Component
     /**
      * @param string $mode
      *
+     * @param null   $offset
+     * @param int    $limit
+     *
      * @return array|null
      */
-    public function getAllCoupons($mode = 'all')
+    public function getAllCoupons($mode = 'all', $offset = null, $limit = 20)
     {
+        $query = CouponRecord::find();
+
+        if ($offset !== null) {
+            $query = $query
+                ->offset($offset)
+                ->limit($limit);
+        }
+
         if (!$mode || $mode === 'used') {
-            $coupons = CouponRecord::find()->where(['not', ['customerId' => null]])->all();
+            $coupons = $query->where(['not', ['customerId' => null]])->all();
         }
         elseif ($mode === 'unused') {
-            $coupons = CouponRecord::find()->where(['customerId' => null])->all();
+            $coupons = $query->where(['customerId' => null])->all();
         }
         else {
-            $coupons = CouponRecord::find()->all();
+            $coupons = $query->all();
         }
 
         if (!$coupons) {
@@ -71,6 +85,93 @@ class Coupons extends Component
         }
 
         return $count;
+    }
+
+    /**
+     * @param null $id
+     *
+     * @return CouponModel
+     */
+    public function getCouponById($id = null)
+    {
+        /** @var CouponRecord $couponRecord */
+        $couponRecord = CouponRecord::find()->with('customer')->where(['id' => $id])->limit(1)->one();
+
+        /** @var CouponModel $model */
+        $model = CouponModel::populateModel($couponRecord, false);
+
+        return $model;
+    }
+
+    public function getFreeCoupon($siteId = null)
+    {
+        $record = CouponRecord::find()->where([
+            'customerId' => null,
+            'siteId'     => $siteId,
+        ])->limit(1)->one();
+
+        /** @var CouponModel $model */
+        $model = CouponModel::populateModel($record, false);
+
+        return $model;
+    }
+
+    /**
+     * @param CustomerModel $customer
+     * @param null          $siteId
+     *
+     * @return bool|CouponModel
+     * @throws \craft\errors\SiteNotFoundException
+     */
+    public function createCouponForCustomer(CustomerModel $customer, $siteId = null)
+    {
+        $existingCustomer = Valassis::$plugin->customers->getCustomerByEmail($customer->email);
+
+        if (!$siteId) {
+            $siteId = Craft::$app->getSites()->getCurrentSite()->id;
+        }
+
+        if ($existingCustomer) {
+            return false;
+        }
+
+        $nextAvailableCoupon = $this->getFreeCoupon($siteId);
+
+        if (!$nextAvailableCoupon) {
+            // @todo log/notify about no available coupons for site?
+            return false;
+        }
+
+        Valassis::$plugin->customers->saveCustomer($customer);
+
+        //$this->getBarcodeFromValassis($nextAvailableCoupon, $customer);
+
+        if ($customer->id) {
+            $nextAvailableCoupon->customerId = $customer->id;
+
+            $this->saveCoupon($nextAvailableCoupon);
+        }
+
+        return $nextAvailableCoupon;
+    }
+
+    public function getBarcodeFromValassis(CouponModel &$coupon, CustomerModel $customer)
+    {
+        $settings = Valassis::$plugin->getSettings();
+        $client   = new Client();
+
+        try {
+            $response = $client->post($settings->printUrl, [
+                'auth' => $settings->getAuthPair(),
+                'json' => [$coupon->getCouponPayload()],
+            ]);
+
+            $coupon->response = json_decode((string)$response->getBody(), true);
+        } catch (RequestException $e) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

@@ -23,8 +23,9 @@
  */
 
 return [
+    'username' => '',
+    'password' => '',
 
-    // This controls blah blah blah
-    "someAttribute" => true,
-
+    // https://coupons.valassis.eu/capi/directPrint/xxxxxxxxx
+    'printUrl' => '',
 ];

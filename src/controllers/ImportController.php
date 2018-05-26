@@ -11,6 +11,7 @@
 namespace superbig\valassis\controllers;
 
 use craft\helpers\UrlHelper;
+use craft\models\Site;
 use craft\web\UploadedFile;
 use superbig\valassis\models\CouponModel;
 use superbig\valassis\models\ImportModel;
@@ -48,7 +49,15 @@ class ImportController extends Controller
      */
     public function actionNew()
     {
+        $sites = array_map(function(Site $site) {
+            return [
+                'label' => $site->name,
+                'value' => $site->id,
+            ];
+        }, Craft::$app->getSites()->getAllSites());
+
         return $this->renderTemplate('valassis/import/new', [
+            'sites' => $sites,
             //'imports' => Valassis::$plugin->imports->getAllImports(),
         ]);
     }
@@ -118,16 +127,20 @@ class ImportController extends Controller
      */
     public function actionSave()
     {
+        $defaultSiteId    = Craft::$app->getSites()->getCurrentSite()->id;
         $coupons          = Craft::$app->getRequest()->getRequiredParam('coupons');
+        $siteId           = Craft::$app->getRequest()->getParam('siteId', $defaultSiteId);
         $import           = new ImportModel();
         $import->scenario = ImportModel::SCENARIO_IMPORT;
         $import->payload  = $coupons;
-        $import->siteId   = Craft::$app->getSites()->getCurrentSite()->id;
+        $import->siteId   = $siteId;
 
         $imported = Valassis::$plugin->imports->saveImport($import);
 
         if ($imported) {
             $coupons = array_map(function($row) use ($import) {
+                $row['siteId']    = $import->siteId;
+
                 $coupon           = CouponModel::createFromImport($row);
                 $coupon->importId = $import->id;
 
@@ -137,8 +150,19 @@ class ImportController extends Controller
 
         Valassis::$plugin->coupons->saveCoupons($coupons);
 
-        return $this->redirect(UrlHelper::cpUrl('valassis/imports'));
-
         return $this->redirect(UrlHelper::cpUrl('valassis/imports/' . $import->id));
+    }
+
+    /**
+     * @return \yii\web\Response
+     * @throws \yii\web\BadRequestHttpException
+     */
+    public function actionDelete()
+    {
+        $id = Craft::$app->getRequest()->getRequiredParam('id');
+
+        return $this->asJson([
+            'success' => Valassis::$plugin->imports->deleteById($id),
+        ]);
     }
 }

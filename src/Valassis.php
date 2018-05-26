@@ -13,6 +13,10 @@ namespace superbig\valassis;
 use craft\contactform\events\SendEvent;
 use craft\contactform\Mailer;
 use craft\helpers\UrlHelper;
+use Solspace\Freeform\Events\Mailer\RenderEmailEvent;
+use Solspace\Freeform\Events\Mailer\SendEmailEvent;
+use Solspace\Freeform\Services\MailerService;
+use superbig\valassis\models\CustomerModel;
 use superbig\valassis\services\Coupons as CouponsService;
 use superbig\valassis\services\Customers as CustomersService;
 use superbig\valassis\services\Imports as ImportsService;
@@ -39,6 +43,8 @@ use yii\base\Event;
  * @property  CouponsService   $coupons
  * @property  CustomersService $customers
  * @property  ImportsService   $imports
+ *
+ * @method Settings getSettings()
  */
 class Valassis extends Plugin
 {
@@ -133,9 +139,45 @@ class Valassis extends Plugin
 
     public function handleSiteRequest()
     {
-        Event::on(Mailer::class, Mailer::EVENT_BEFORE_SEND, function(SendEvent $e) {
+        Event::on(
+            MailerService::class,
+            MailerService::EVENT_BEFORE_RENDER,
+            function(RenderEmailEvent $event) {
+                $submission   = $event->getSubmission();
+                $notification = $event->getNotification();
+                $fieldValues  = $event->getFieldValues();
 
-        });
+                if (empty($fieldValues['email']) || !in_array($notification->getHandle(), $this->getSettings()->couponEmailHandles)) {
+                    return true;
+                }
+
+                $email            = $fieldValues['email'];
+                $name             = "{$fieldValues['firstName']} {$fieldValues['lastName']}";
+                $customer         = new CustomerModel();
+                $customer->email  = $email;
+                $customer->name   = $name;
+                $customer->siteId = Craft::$app->getSites()->getCurrentSite()->id;
+                $coupon           = Valassis::$plugin->coupons->createCouponForCustomer($customer);
+
+                if ($coupon) {
+                    $fieldValues['coupon'] = $coupon;
+
+                    $event->setFieldValues($fieldValues);
+                }
+            }
+        );
+
+        Event::on(
+            MailerService::class,
+            MailerService::EVENT_BEFORE_SEND,
+            function(SendEmailEvent $event) {
+                $fieldValues = $event->getFieldValues();
+
+                if (!isset($fieldValues['coupon'])) {
+                    $event->isValid = false;
+                }
+            }
+        );
     }
 
     public function handleCpRequest()
@@ -186,7 +228,7 @@ class Valassis extends Plugin
     {
         return [
             'valassis/coupons'          => 'valassis/coupon/index',
-            'valassis/coupons/<id:\d+>' => 'valassis/coupon/edit',
+            'valassis/coupons/<id:\d+>' => 'valassis/coupon/details',
             'valassis/imports'          => 'valassis/import/index',
             'valassis/imports/new'      => 'valassis/import/new',
             'valassis/imports/<id:\d+>' => 'valassis/import/details',

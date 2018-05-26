@@ -28,6 +28,7 @@ ValassisUpload = Garnish.Base.extend(
             this.$container = $(this.settings.containerSelector);
             this.$results = $(this.settings.resultSelector);
             this.$resultContainer = $(this.settings.resultSelector).parent();
+            this.$importButton = $(this.settings.importButtonSelector);
             this.progressBar = new Craft.ProgressBar($('<div class="progress-shade"></div>').appendTo(this.$resultContainer));
 
             var options = {
@@ -94,9 +95,11 @@ ValassisUpload = Garnish.Base.extend(
          */
         _onUploadComplete: function (event, data) {
             if (!data.result.success) {
+                this.$importButton.prop('disabled', true).addClass('disabled');
                 this.displayErrors(data.result.errors);
             } else {
                 var html = $(data.result.html);
+                this.$importButton.prop('disabled', false).removeClass('disabled');
 
                 this.refreshResult(data.result);
             }
@@ -124,7 +127,7 @@ ValassisUpload = Garnish.Base.extend(
         displayErrors: function (errorMap) {
             Object.keys(errorMap).map((attribute) => {
                 let errors = errorMap[attribute];
-                
+
                 errors.map(error => Craft.cp.displayError(error));
             });
         }
@@ -135,6 +138,7 @@ ValassisUpload = Garnish.Base.extend(
             uploadAction: "",
             deleteAction: "",
             fileInputSelector: "",
+            importButtonSelector: "",
 
             onAfterRefreshResult: $.noop,
             containerSelector: null,

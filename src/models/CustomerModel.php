@@ -10,6 +10,7 @@
 
 namespace superbig\valassis\models;
 
+use superbig\valassis\base\BaseModel;
 use superbig\valassis\Valassis;
 
 use Craft;
@@ -25,7 +26,7 @@ use craft\base\Model;
  * @property string $name
  * @property string $email
  */
-class CustomerModel extends Model
+class CustomerModel extends BaseModel
 {
     // Public Properties
     // =========================================================================
