@@ -52,6 +52,7 @@
             <tr>
                 <th>Date</th>
                 <th>Coupons</th>
+                <th>Site</th>
                 <th class="thin"></th>
             </tr>
             </thead>
@@ -64,6 +65,7 @@
                         </a>
                     </td>
                     <td>{{ import.coupons | length }} coupons</td>
+                    <td>{{ import.getSite().name }}</td>
                     <td class="thin">
                         <a class="delete icon" title="{{ 'Delete'|t('valassis') }}" role="button"></a>
                     </td>
@@ -79,5 +81,5 @@
         tableSelector: '#imports',
         noObjectsSelector: '#no-imports',
         deleteAction: 'valassis/import/delete'
-    });
+    })
 {% endjs %}

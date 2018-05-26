@@ -10,6 +10,7 @@
 
 namespace superbig\valassis\models;
 
+use Craft;
 use craft\helpers\UrlHelper;
 use superbig\valassis\base\BaseModel;
 use superbig\valassis\records\CouponRecord;
@@ -56,6 +57,11 @@ class ImportModel extends BaseModel
     public function getCoupons()
     {
         return $this->coupons;
+    }
+
+    public function getSite()
+    {
+        return Craft::$app->getSites()->getSiteById($this->siteId);
     }
 
     /**
