@@ -38,6 +38,11 @@ class Settings extends Model
     public $printUrl = '';
 
     /**
+     * @var string
+     */
+    public $returnUrl = 'https://google.com';
+
+    /**
      * @var array
      */
     public $couponEmailHandles = [];

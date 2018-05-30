@@ -84,6 +84,26 @@ class CouponModel extends BaseModel
         return $model;
     }
 
+    /**
+     * @return CustomerModel
+     */
+    public function getCustomer()
+    {
+        if (!$this->_customer) {
+            $this->_customer = Valassis::$plugin->customers->getCustomerById($this->customerId);
+        }
+
+        return $this->_customer;
+    }
+
+    /**
+     * @param CustomerModel $customer
+     */
+    public function setCustomer(CustomerModel $customer)
+    {
+        $this->_customer = $customer;
+    }
+
     // Public Methods
     // =========================================================================
 
@@ -104,15 +124,18 @@ class CouponModel extends BaseModel
         return $this->_site;
     }
 
+    /**
+     * @return array
+     */
     public function getCouponPayload()
     {
         return [
             "consumerId"        => $this->consumerId,
-            "remoteConsumerId"  => "000000000000001",
-            "CouponDescription" => "Test Web Print",
-            "Barcode"           => "itf:2076001090000000000000001,Ean13:ccode",
+            "remoteConsumerId"  => $this->consumerId,
+            "CouponDescription" => $this->getCustomer()->name,
+            "Barcode"           => "itf:{$this->couponPin},Ean13:ccode",
             "Type"              => "n",
-            "returnUrl"         => "http://www.google.co.uk/",
+            "returnUrl"         => Valassis::$plugin->getSettings()->returnUrl,
             "synSrc"            => "9Wq2ieCwsNA%3D",
             "theme"             => null,
         ];

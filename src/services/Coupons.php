@@ -142,11 +142,12 @@ class Coupons extends Component
             return false;
         }
 
-        Valassis::$plugin->customers->saveCustomer($customer);
+        $nextAvailableCoupon->setCustomer($customer);
+        $response = $this->getBarcodeFromValassis($nextAvailableCoupon);
 
-        //$this->getBarcodeFromValassis($nextAvailableCoupon, $customer);
+        if ($response) {
+            Valassis::$plugin->customers->saveCustomer($customer);
 
-        if ($customer->id) {
             $nextAvailableCoupon->customerId = $customer->id;
 
             $this->saveCoupon($nextAvailableCoupon);
@@ -155,7 +156,12 @@ class Coupons extends Component
         return $nextAvailableCoupon;
     }
 
-    public function getBarcodeFromValassis(CouponModel &$coupon, CustomerModel $customer)
+    /**
+     * @param CouponModel $coupon
+     *
+     * @return bool
+     */
+    public function getBarcodeFromValassis(CouponModel &$coupon)
     {
         $settings = Valassis::$plugin->getSettings();
         $client   = new Client();
