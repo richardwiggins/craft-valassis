@@ -71,6 +71,9 @@ return [
     // The API endpoint received from Valassis
     'printUrl'           => 'https://coupons.valassis.eu/capi/directPrint/xxxxxxxxxx',
 
+    // Where customers should return after printing
+    'returnUrl'          => '',
+
     // The Freeform notification handles you want to trigger this for
     'couponEmailHandles' => [
         'couponEmail',
