@@ -43,6 +43,19 @@ To install the plugin, follow these instructions.
 
 2. `composer update`
 
+### Freeform modifications
+
+The current version of Freeform (2.0.1) is missing the necessary hook to insert the coupon, so I have modified a few core files.
+
+These are contain in the folder `freeform-hacked-files`, and you need to copy it into the relevant directories.
+
+1. Copy `RenderEmailEvent.php` to `/vendor/solspace/craft3-freeform/src/Events/Mailer`
+2. Copy `MailerService.php` to `vendor/solspace/craft3-freeform/src/Services` (overwrite the existing file)
+
+Solspace has confirmed that they will add the hook in the next release.
+
+*Note: If you update Freeform, these files may be overwrritten*
+
 ## Configuring Valassis
 
 Copy the sample config.php into Craft's config directory, usually config/, and update all the fields
