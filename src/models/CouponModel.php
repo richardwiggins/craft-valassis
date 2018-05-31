@@ -54,7 +54,7 @@ class CouponModel extends BaseModel
      */
     public function getUrl()
     {
-        return 'helo';
+        return $this->response[0] ?? null;
     }
 
     /**

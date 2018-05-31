@@ -23,9 +23,12 @@
  */
 
 return [
-    'username' => '',
-    'password' => '',
+    'username'           => '',
+    'password'           => '',
 
     // https://coupons.valassis.eu/capi/directPrint/xxxxxxxxx
-    'printUrl' => '',
+    'printUrl'           => '',
+    'couponEmailHandles' => [
+        'couponEmail',
+    ],
 ];
