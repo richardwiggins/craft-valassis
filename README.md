@@ -22,22 +22,81 @@ To install the plugin, follow these instructions.
 
 3. In the Control Panel, go to Settings → Plugins and click the “Install” button for Valassis.
 
-## Valassis Overview
+### From a private repository
 
--Insert text here-
+Add these entries to Craft's composer.json file:
+
+```json
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/sjelfull/craft-valassis"
+        }
+    ],
+    "require": {
+        ...
+        "superbig/craft-valassis": "dev-master"
+    }
+}
+```
 
 ## Configuring Valassis
 
--Insert text here-
+Copy the sample config.php into Craft's config directory, usually config/, and update all the fields
+
+```php
+<?php
+return [
+    // Username from Valassis
+    'username'           => 'username',
+    // Password
+    'password'           => 'password',
+
+    // The API endpoint received from Valassis
+    'printUrl'           => 'https://coupons.valassis.eu/capi/directPrint/xxxxxxxxxx',
+
+    // The Freeform notification handles you want to trigger this for
+    'couponEmailHandles' => [
+        'couponEmail',
+    ],
+];
+```
 
 ## Using Valassis
 
--Insert text here-
+When a Freeform submission is sent, the Valassis plugin will listen for notifications constrained by the config`s `couponEmailHandles` setting.
 
-## Valassis Roadmap
+The Valassis plugin expects a submission to contain these 3 fields:
 
-Some things to do, and ideas for potential features:
+- email
+- firstName
+- lastName
 
-* Release it
+### Checking if a user should receieve a coupon via email
+
+The plugin will check these:
+
+1. If a user with the same email has received a coupon before, it will not generate a new coupon or send off an email.
+2. If there is no available coupons for the current site, it will stop processing
+3. It will make a call to Valassis to generate a coupon, and if the response isn't valid, it will stop processing
+
+If all the steps above passes, it will save the email and name as a customer record, tie to the coupon, and send off a email
+
+### Email notification
+
+Setup a email notification with your desired content under Freeform Lite -> Email Notifications. Make sure to copy the emails handle into the `couponEmailHandles` setting.
+
+The email notification will receive the Coupon model as the variable `coupon`.
+
+To access the coupon's print URL, you can use the following code:
+
+```twig
+...
+
+{% if coupon is defined %}
+    You may download your coupon from {{ coupon.getUrl() }}
+{% endif %}
+```
 
 Brought to you by [Superbig](https://superbig.co)
