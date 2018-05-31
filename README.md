@@ -24,7 +24,7 @@ To install the plugin, follow these instructions.
 
 ### From a private repository
 
-Add these entries to Craft's composer.json file:
+1. Add these entries to Craft's composer.json file:
 
 ```json
 {
@@ -40,6 +40,8 @@ Add these entries to Craft's composer.json file:
     }
 }
 ```
+
+2. `composer update`
 
 ## Configuring Valassis
 
