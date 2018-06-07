@@ -10,6 +10,7 @@
 
 namespace superbig\valassis\services;
 
+use craft\helpers\Template;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use superbig\valassis\models\CouponModel;
@@ -154,6 +155,30 @@ class Coupons extends Component
         }
 
         return $nextAvailableCoupon;
+    }
+
+    /**
+     * @return \Twig_Markup
+     */
+    public function getCouponTriggerInput()
+    {
+        $key   = 'checkForCoupons';
+        $value = Craft::$app->getSecurity()->hashData('valassis-check-coupons');
+        $input = "<input type='hidden' name='{$key}' value='{$value}' />";
+
+        return Template::raw($input);
+    }
+
+    /**
+     * @return bool
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function checkForCouponsInput()
+    {
+        $value = Craft::$app->getRequest()->getParam('checkForCoupons');
+
+        return Craft::$app->getSecurity()->validateData($value);
     }
 
     /**

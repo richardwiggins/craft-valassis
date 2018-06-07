@@ -41,4 +41,9 @@ class ValassisVariable
 
         return Valassis::$plugin->coupons->createCouponForCustomer($customer);
     }
+
+    public function getCouponTriggerInput()
+    {
+        return Valassis::$plugin->coupons->getCouponTriggerInput();
+    }
 }

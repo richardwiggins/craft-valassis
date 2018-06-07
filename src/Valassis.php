@@ -137,47 +137,53 @@ class Valassis extends Plugin
 
     }
 
+    /**
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     */
     public function handleSiteRequest()
     {
-        Event::on(
-            MailerService::class,
-            MailerService::EVENT_BEFORE_RENDER,
-            function(RenderEmailEvent $event) {
-                $submission   = $event->getSubmission();
-                $notification = $event->getNotification();
-                $fieldValues  = $event->getFieldValues();
+        if ($this->coupons->checkForCouponsInput()) {
+            Event::on(
+                MailerService::class,
+                MailerService::EVENT_BEFORE_RENDER,
+                function(RenderEmailEvent $event) {
+                    $submission   = $event->getSubmission();
+                    $notification = $event->getNotification();
+                    $fieldValues  = $event->getFieldValues();
 
-                if (empty($fieldValues['email']) || !in_array($notification->getHandle(), $this->getSettings()->couponEmailHandles)) {
-                    return true;
+                    if (empty($fieldValues['email']) || !in_array($notification->getHandle(), $this->getSettings()->couponEmailHandles)) {
+                        return true;
+                    }
+
+                    $email            = $fieldValues['email'];
+                    $name             = "{$fieldValues['firstName']} {$fieldValues['lastName']}";
+                    $customer         = new CustomerModel();
+                    $customer->email  = $email;
+                    $customer->name   = $name;
+                    $customer->siteId = Craft::$app->getSites()->getCurrentSite()->id;
+                    $coupon           = Valassis::$plugin->coupons->createCouponForCustomer($customer);
+
+                    if ($coupon) {
+                        $fieldValues['coupon'] = $coupon;
+
+                        $event->setFieldValues($fieldValues);
+                    }
                 }
+            );
 
-                $email            = $fieldValues['email'];
-                $name             = "{$fieldValues['firstName']} {$fieldValues['lastName']}";
-                $customer         = new CustomerModel();
-                $customer->email  = $email;
-                $customer->name   = $name;
-                $customer->siteId = Craft::$app->getSites()->getCurrentSite()->id;
-                $coupon           = Valassis::$plugin->coupons->createCouponForCustomer($customer);
+            Event::on(
+                MailerService::class,
+                MailerService::EVENT_BEFORE_SEND,
+                function(SendEmailEvent $event) {
+                    $fieldValues = $event->getFieldValues();
 
-                if ($coupon) {
-                    $fieldValues['coupon'] = $coupon;
-
-                    $event->setFieldValues($fieldValues);
+                    if (!isset($fieldValues['coupon'])) {
+                        $event->isValid = false;
+                    }
                 }
-            }
-        );
-
-        Event::on(
-            MailerService::class,
-            MailerService::EVENT_BEFORE_SEND,
-            function(SendEmailEvent $event) {
-                $fieldValues = $event->getFieldValues();
-
-                if (!isset($fieldValues['coupon'])) {
-                    $event->isValid = false;
-                }
-            }
-        );
+            );
+        }
     }
 
     public function handleCpRequest()
